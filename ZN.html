@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Odds Master - Pro</title>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --card-dark: #1e1e1e;
+            --accent: #ff7b00; /* Cor Betano */
+            --green: #00ff88;
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container { max-width: 900px; margin: auto; }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        .card {
+            background: var(--card-dark);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        h2 { color: var(--accent); font-size: 1.2rem; }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        button:hover { opacity: 0.8; }
+
+        .result-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: #252525;
+            border-left: 4px solid var(--green);
+        }
+
+        .simulator-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        .simulator-table th, .simulator-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        .highlight { color: var(--green); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>GEMINI ODDS <span style="color:var(--accent)">SYSTEM</span></h1>
+        <p>Análise de Odds Seguras & Gestão de Banca</p>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h2>💰 Calculadora de Entrada</h2>
+            <label>Valor da Aposta (R$):</label>
+            <input type="number" id="betValue" placeholder="Ex: 100" value="100">
+            
+            <label>Odd Selecionada:</label>
+            <input type="number" id="oddValue" step="0.01" placeholder="Ex: 1.20">
+            
+            <button onclick="calculateReturn()">CALCULAR RETORNO</button>
+
+            <div id="result" class="result-box" style="display:none;">
+                <span>Lucro Líquido: <span id="profit" class="highlight"></span></span><br>
+                <span>Total a Receber: <span id="total" class="highlight"></span></span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 Metas do Dia</h2>
+            <ul style="list-style: none; padding: 0;">
+                <li>🔹 2x Odds (1.18 - 1.25) <small style="color:gray">Segurança Máxima</small></li>
+                <li>🔸 2x Odds (1.81 - 2.10) <small style="color:gray">Risco Moderado</small></li>
+            </ul>
+            <p style="font-size: 0.8rem; color: #888;">*Cole o Prompt Mestre no Gemini para obter as entradas de hoje.</p>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <h2>📅 Projeção de Crescimento (Até fim do mês)</h2>
+        <p>Simulação baseada em 1 entrada certeira/dia (Odd média 1.25) com Juros Compostos.</p>
+        <table class="simulator-table" id="simTable">
+            <thead>
+                <tr>
+                    <th>Dia</th>
+                    <th>Banca Inicial</th>
+                    <th>Lucro Esperado</th>
+                    <th>Banca Final</th>
+                </tr>
+            </thead>
+            <tbody id="simBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function calculateReturn() {
+    const val = parseFloat(document.getElementById('betValue').value);
+    const odd = parseFloat(document.getElementById('oddValue').value);
+    
+    if(val > 0 && odd > 0) {
+        const total = val * odd;
+        const profit = total - val;
+        
+        document.getElementById('profit').innerText = "R$ " + profit.toFixed(2);
+        document.getElementById('total').innerText = "R$ " + total.toFixed(2);
+        document.getElementById('result').style.display = "block";
+    }
+}
+
+function runSimulation() {
+    const today = new Date();
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    const currentDay = today.getDate();
+    let banca = 1000; // Valor inicial exemplo
+    let html = '';
+
+    for (let d = currentDay; d <= lastDay; d++) {
+        let lucro = banca * 0.20; // Estimativa de lucro médio diário sobre a banca
+        let final = banca + lucro;
+        html += `<tr>
+            <td>${d}/${today.getMonth()+1}</td>
+            <td>R$ ${banca.toFixed(2)}</td>
+            <td class="highlight">R$ ${lucro.toFixed(2)}</td>
+            <td>R$ ${final.toFixed(2)}</td>
+        </tr>`;
+        banca = final;
+    }
+    document.getElementById('simBody').innerHTML = html;
+}
+runSimulation();
+</script>
+
+</body>
+</html>
