@@ -3,172 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA ODDS HOJE</title>
+    <title>SISTEMA DE ACÚMULO 30 DIAS</title>
     <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .container { width: 100%; max-width: 400px; }
-
-        .header {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 2px solid #ff7b00;
-            margin-bottom: 20px;
-        }
-
-        .btn-copy {
-            background: #ff7b00;
-            color: #000;
-            border: none;
-            padding: 18px;
-            width: 100%;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(255, 123, 0, 0.3);
-        }
-
-        .card {
-            background: #111;
-            border: 1px solid #222;
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-        }
-
-        h2 { color: #ff7b00; font-size: 1.1rem; margin-top: 0; }
-
-        .input-group { margin-bottom: 10px; }
-        label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 5px; }
-        
-        input {
-            width: 100%;
-            padding: 12px;
-            background: #222;
-            border: 1px solid #333;
-            color: #00ff88;
-            border-radius: 8px;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-
-        .result-row {
-            display: flex;
-            justify-content: space-between;
-            background: #1a1a1a;
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 5px;
-        }
-
-        .gain { color: #00ff88; font-weight: bold; }
-
-        .footer-note {
-            font-size: 0.7rem;
-            color: #555;
-            text-align: center;
-            margin-top: 20px;
-        }
+        :root { --orange: #ff7b00; --green: #00ff88; --dark: #0a0a0a; --card: #161616; }
+        body { background: var(--dark); color: #fff; font-family: sans-serif; margin: 0; padding: 15px; }
+        .container { max-width: 450px; margin: auto; }
+        .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #222; }
+        .btn-prompt { background: var(--orange); color: #000; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stat-box { background: #000; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #333; }
+        .val { display: block; font-size: 1.4rem; font-weight: bold; color: var(--green); }
+        input { width: 100%; padding: 12px; background: #222; border: 1px solid #333; color: #fff; border-radius: 8px; margin: 10px 0; box-sizing: border-box; }
+        .btn-add { background: var(--green); color: #000; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; }
+        .history { font-size: 0.8rem; height: 150px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1 style="margin:0">ODDS <span style="color:#ff7b00">MASTER</span></h1>
-        <small id="dataAtual"></small>
-    </div>
+    <h2 style="text-align:center; color: var(--orange);">CONTROLE 30 DIAS</h2>
 
-    <button class="btn-copy" onclick="copiarPrompt()">
-        1. COPIAR COMANDO PARA GEMINI
-    </button>
+    <button class="btn-prompt" onclick="copiarComando()">📋 COPIAR PENTE FINO DE HOJE</button>
 
     <div class="card">
-        <h2>💰 Calculadora de Retorno</h2>
-        <div class="input-group">
-            <label>Valor que vou colocar (R$):</label>
-            <input type="number" id="invest" value="100" oninput="calcular()">
-        </div>
-        <div class="input-group">
-            <label>Odd do Gemini:</label>
-            <input type="number" id="odd" placeholder="Ex: 1.25" step="0.01" oninput="calcular()">
-        </div>
-
-        <div class="result-row">
-            <span>VOCÊ RECEBE:</span>
-            <span id="total" class="gain">R$ 0,00</span>
-        </div>
-        <div class="result-row">
-            <span>LUCRO LIMPO:</span>
-            <span id="lucro" class="gain">R$ 0,00</span>
+        <div class="stat-grid">
+            <div class="stat-box"><span>Banca Atual</span><span class="val" id="bancaDisplay">R$ 0,00</span></div>
+            <div class="stat-box"><span>Lucro Total</span><span class="val" id="lucroDisplay" style="color:var(--orange)">R$ 0,00</span></div>
         </div>
     </div>
 
     <div class="card">
-        <h2>📅 Projeção do Mês (Acumulado)</h2>
-        <div id="simulacao"></div>
+        <h3>Registrar Green do Dia</h3>
+        <label>Valor Apostado (R$):</label>
+        <input type="number" id="vAposta" placeholder="Ex: 100">
+        <label>Odd que bateu:</label>
+        <input type="number" id="oBateu" step="0.01" placeholder="Ex: 1.25">
+        <button class="btn-add" onclick="salvarResultado()">GRAVAR NO ACUMULADO</button>
     </div>
 
-    <div class="footer-note">
-        Copie o comando, cole no chat do Gemini e use os valores acima para gerir sua banca.
+    <div class="card">
+        <h3>Histórico / Progresso</h3>
+        <div id="historico" class="history"></div>
+        <button onclick="limparTudo()" style="background:none; border:none; color:red; font-size:0.7rem; margin-top:10px; cursor:pointer;">Limpar todos os 30 dias</button>
     </div>
 </div>
 
 <script>
-    // Atualiza a data
-    const hoje = new Date();
-    document.getElementById('dataAtual').innerText = hoje.toLocaleDateString('pt-BR');
+    let dados = JSON.parse(localStorage.getItem('banca_gemini')) || { banca: 1000, lucro: 0, logs: [] };
 
-    function copiarPrompt() {
-        const dataStr = hoje.toLocaleDateString('pt-BR');
-        const prompt = `ESPECIALISTA EM ODDS: Me forneça exatamente 4 ODDS para HOJE (${dataStr}).
-        REGRAS:
-        - Devem ser da Betano ou Sportingbet.
-        - 2 ODDS entre 1.18 e 1.25.
-        - 2 ODDS entre 1.81 e 2.10 (pode ser combinada).
-        - Informe: Jogo, Esporte, Mercado e a Odd exata.
-        - Calcule o retorno de R$ 100,00 para cada uma.`;
+    function atualizarTela() {
+        document.getElementById('bancaDisplay').innerText = `R$ ${dados.banca.toFixed(2)}`;
+        document.getElementById('lucroDisplay').innerText = `R$ ${dados.lucro.toFixed(2)}`;
+        const hist = document.getElementById('historico');
+        hist.innerHTML = dados.logs.map(log => `<div>✅ ${log.data}: +R$ ${log.valor} (Odd ${log.odd})</div>`).reverse().join('');
+    }
+
+    function copiarComando() {
+        const d = new Date().toLocaleDateString('pt-BR');
+        const prompt = `PENTE FINO DE ODDS - DATA: ${d}.
+        Procure apenas eventos que acontecem HOJE, ${d}.
+        Filtre na Betano/Sportingbet:
+        - 2 ODDS entre 1.18 e 1.25 (Segurança total).
+        - 2 ODDS entre 1.81 e 2.10 (Valor real).
+        Traga o nome do jogo e horário. Não erre a data.
+        Calcule o retorno para uma aposta de R$ ${dados.banca.toFixed(2)} (minha banca atual).`;
         
         navigator.clipboard.writeText(prompt);
-        alert("Comando copiado! Agora cole no Gemini e peça as odds.");
+        alert("Pente fino copiado! Cole para o Gemini.");
     }
 
-    function calcular() {
-        const v = parseFloat(document.getElementById('invest').value) || 0;
-        const o = parseFloat(document.getElementById('odd').value) || 0;
-        const total = v * o;
-        const lucro = total - v;
+    function salvarResultado() {
+        const v = parseFloat(document.getElementById('vAposta').value);
+        const o = parseFloat(document.getElementById('oBateu').value);
+        if(!v || !o) return;
 
-        document.getElementById('total').innerText = "R$ " + total.toFixed(2);
-        document.getElementById('lucro').innerText = "R$ " + (lucro > 0 ? lucro.toFixed(2) : "0.00");
+        const lucroLimpo = (v * o) - v;
+        dados.banca += lucroLimpo;
+        dados.lucro += lucroLimpo;
+        dados.logs.push({ data: new Date().toLocaleDateString('pt-BR'), valor: lucroLimpo.toFixed(2), odd: o });
+
+        localStorage.setItem('banca_gemini', JSON.stringify(dados));
+        atualizarTela();
+        alert("Resultado gravado! Sua banca subiu.");
     }
 
-    // Gera simulação mensal simplificada
-    function gerarSimulacao() {
-        let banca = 1000; 
-        let html = "";
-        for(let i=1; i<=5; i++) {
-            let lucro = banca * 0.10; // Meta de 10%
-            banca += lucro;
-            html += `<div style="font-size:0.8rem; display:flex; justify-content:space-between; margin-bottom:5px; border-bottom:1px solid #222">
-                <span>Dia ${i}</span> <span>Total: <b>R$ ${banca.toFixed(2)}</b></span>
-            </div>`;
-        }
-        document.getElementById('simulacao').innerHTML = html;
-    }
-    gerarSimulacao();
+    function limparTudo() { if(confirm("Zerar sistema?")) { localStorage.clear(); location.reload(); } }
+
+    atualizarTela();
 </script>
-
 </body>
 </html>
